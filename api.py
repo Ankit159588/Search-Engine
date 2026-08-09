@@ -1,24 +1,37 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from crawler import Crawler
-from search_engine import SearchEngine
-
-
 from indexer import Indexer
 from search_engine import SearchEngine
 
-app = FastAPI(
-    title="DevSearch API",
-    description="A simple web search engine",
-    version="1.0.0"
+app = FastAPI()
+crawler = Crawler()
+indexer = Indexer()
+
+pages = crawler.crawl(
+    "https://spring.io",
+    max_pages=10
 )
 
-query = str(input("Enter the query"))
-
-crawler = Crawler()
-pages = crawler.crawl( "https://spring.io", max_pages=5 )
-
-indexer = Indexer()
 index = indexer.build(pages)
 
-search = SearchEngine()
-engine = search.search(query)
+search_engine = SearchEngine(
+    pages,
+    index
+)
+
+@app.get("/search")
+def search(query: str):
+
+    results = search_engine.search(query)
+
+    return {
+        "query": query,
+        "results": [
+            {
+                "title": result["page"].title,
+                "url": result["page"].url,
+                "score": result["score"]
+            }
+            for result in results
+        ]
+    }
