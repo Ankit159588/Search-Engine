@@ -1,17 +1,32 @@
-# Python virtual environment
+# Python
 venv/
-
-# Python cache
+**/venv/
 __pycache__/
+**/__pycache__/
 *.pyc
 
-# IDE
+# IntelliJ / JetBrains
 .idea/
+**/.idea/
+*.iml
 
-# Environment variables / secrets
+# Environment / secrets
 .env
 **/.env
 
-# OS files
+# Java / Spring Boot
+target/
+**/target/
+
+# Frontend
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
