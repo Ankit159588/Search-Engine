@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 
 class Parser:
 
-    def parse(self, url: str, html: str) -> Page:
+    def parse(self, url: str, html: bytes) -> Page:
 
         # Create DOM tree
         soup = BeautifulSoup(html, "lxml")

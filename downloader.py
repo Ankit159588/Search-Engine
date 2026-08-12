@@ -1,21 +1,30 @@
 import requests
 from requests.exceptions import RequestException
 
-class Downloader:
-    # def download(self, url: str):
-    #     response = requests.get(url)
-    #     return response.text
 
-    def download(self, url: str):
-        header = {
+class Downloader:
+
+    def download(self, url):
+
+        headers = {
             "User-Agent": "DevSearchBot/1.0"
         }
 
-        try: 
-            response = requests.get(url, headers=header, timeout=10)
+        try:
+
+            response = requests.get(
+                url,
+                headers=headers,
+                timeout=10
+            )
+
             response.raise_for_status()
-            return response.text
+
+            return response.content
+
         except RequestException as e:
+
             print(f"Failed to download {url}")
             print(e)
+
             return None

@@ -1,22 +1,59 @@
-
 from crawler import Crawler
 from indexer import Indexer
 from search_engine import SearchEngine
 
 
+SITES = [
+    (
+        "https://en.wikipedia.org/wiki/Main_Page",
+        {"en.wikipedia.org"}
+    ),
+    (
+        "https://developer.mozilla.org/",
+        {"developer.mozilla.org"}
+    ),
+    (
+        "https://docs.python.org/3/",
+        {"docs.python.org"}
+    ),
+    (
+        "https://docs.oracle.com/en/java/",
+        {"docs.oracle.com"}
+    ),
+    (
+        "https://www.gnu.org/",
+        {"www.gnu.org"}
+    )
+]
+
+
 def main():
-    # Step 1: Crawl websites
+
+    # Step 1: Crawl all websites
     crawler = Crawler()
 
-    pages = crawler.crawl(
-        "https://spring.io",
-        max_pages=5
-    )
+    pages = []
 
-    print(f"\nCrawled {len(pages)} pages")
+    for seed_url, allowed_domains in SITES:
+
+        print(f"\nCrawling: {seed_url}")
+
+        site_pages = crawler.crawl(
+            seed_url=seed_url,
+            max_pages=20,
+            max_depth=2,
+            allowed_domains=allowed_domains
+        )
+
+        print(f"Crawled {len(site_pages)} pages")
+
+        pages.extend(site_pages)
+
+    print(f"\nTotal pages crawled: {len(pages)}")
 
     # Step 2: Build search index
     indexer = Indexer()
+
     index = indexer.build(pages)
 
     print(f"Indexed {len(index)} unique words")
@@ -25,11 +62,17 @@ def main():
     engine = SearchEngine(pages, index)
 
     print("\n================================")
-    print("       Simple Search Engine")
+    print("       DevSearch")
     print("================================")
-    print("Type 'exit' to quit.\n")
+    print("Search across:")
+    print("Wikipedia")
+    print("MDN")
+    print("Python Docs")
+    print("Oracle Java Docs")
+    print("GNU")
+    print("\nType 'exit' to quit.\n")
 
-    # Step 4: Keep accepting searches
+    # Step 4: Search loop
     while True:
 
         query = input("Search: ").strip()
@@ -53,14 +96,13 @@ def main():
 
         # Step 6: Display results
         for number, result in enumerate(results, start=1):
+
             page = result["page"]
             score = result["score"]
 
             print(f"{number}. {page.title}")
             print(f"   URL: {page.url}")
             print(f"   Score: {score:.4f}")
-
-            # Show only a small portion of page text
             print(f"   {page.text[:300]}...")
             print("-" * 60)
 
@@ -69,4 +111,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

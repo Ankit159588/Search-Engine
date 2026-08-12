@@ -5,27 +5,42 @@ class SnippetGenerator:
 
     def generate(self, text, query, max_length=250):
 
-        text = " ".join(text.split())
-        query = query.strip()
-
         if not text:
-            return ""
+            return "No preview available."
+
+        text = " ".join(text.split())
 
         if not query:
             return text[:max_length]
 
-        # Find the first occurrence of the query
-        match = re.search(
-            re.escape(query),
-            text,
-            re.IGNORECASE
-        )
+        query_words = query.lower().split()
 
-        if not match:
-            return text[:max_length]
+        positions = []
 
-        start = max(0, match.start() - 100)
-        end = min(len(text), match.end() + 150)
+        for word in query_words:
+
+            match = re.search(
+                re.escape(word),
+                text,
+                re.IGNORECASE
+            )
+
+            if match:
+                positions.append(match.start())
+
+        # Query word wasn't found, so still return useful text
+        if not positions:
+            snippet = text[:max_length]
+
+            if len(text) > max_length:
+                snippet += " ..."
+
+            return snippet
+
+        center = min(positions)
+
+        start = max(0, center - 100)
+        end = min(len(text), start + max_length)
 
         snippet = text[start:end]
 
